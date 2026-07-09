@@ -20,91 +20,90 @@ interface Values {
     passwordConfirmation: string;
 }
 
-const LockIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-    </svg>
-);
-
-const KeyIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-    </svg>
-);
-
 const StyledField = styled(Field)`
     && {
+        margin-bottom: 1.25rem;
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #9CA3AF;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.02em;
+        }
+
         input {
-            height: 54px;
+            height: 56px;
+            width: 100%;
             border-radius: 14px;
-            background: #0F172A !important;
-            border: 1px solid #374151 !important;
+            background: #111827 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
             color: #FFFFFF !important;
             font-size: 0.95rem;
-            padding-left: 44px !important;
-            transition: all 0.25s ease !important;
-
-            &:focus {
-                border-color: #DC2626 !important;
-                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
-                outline: none !important;
-            }
+            padding: 0 18px !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            outline: none !important;
 
             &::placeholder {
                 color: #6B7280 !important;
             }
+
+            &:focus {
+                border-color: #DC2626 !important;
+                box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
+                outline: none !important;
+            }
+
+            &:hover:not(:focus) {
+                border-color: rgba(255, 255, 255, 0.15) !important;
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
         }
-    }
-`;
 
-const InputWrapper = styled.div`
-    position: relative;
-    margin-bottom: 1.25rem;
-`;
-
-const IconWrapper = styled.div`
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    color: #6B7280;
-    pointer-events: none;
-    width: 20px;
-    height: 20px;
-
-    svg {
-        width: 20px;
-        height: 20px;
+        .error-message {
+            font-size: 0.75rem;
+            color: #EF4444;
+            margin-top: 0.3rem;
+            padding-left: 4px;
+        }
     }
 `;
 
 const StyledButton = styled(Button)`
     && {
         width: 100%;
-        height: 54px;
+        height: 56px;
         border-radius: 14px;
-        background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%) !important;
+        background: #DC2626 !important;
         font-weight: 600;
         font-size: 1rem;
-        letter-spacing: 0.01em;
-        transition: all 0.25s ease !important;
+        letter-spacing: 0.3px;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
         border: none !important;
-        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 16px rgba(220, 38, 38, 0.25);
 
         &:hover:not(:disabled) {
-            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+            background: #EF4444 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.35);
         }
 
         &:active:not(:disabled) {
+            background: #B91C1C !important;
             transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
         }
 
         &:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
         }
     }
 `;
@@ -116,7 +115,6 @@ const BackLink = styled(Link)`
     font-weight: 500;
     letter-spacing: 0.02em;
     transition: color 0.2s ease;
-    text-transform: uppercase;
 
     &:hover {
         color: #EF4444;
@@ -134,24 +132,25 @@ const EmailLabel = styled.label`
     font-size: 0.8rem;
     font-weight: 500;
     color: #9CA3AF;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
     letter-spacing: 0.02em;
 `;
 
 const EmailInput = styled(Input)`
     && {
-        height: 54px;
+        height: 56px;
+        width: 100%;
         border-radius: 14px;
-        background: #0F172A !important;
-        border: 1px solid #374151 !important;
+        background: #111827 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         color: #FFFFFF !important;
         font-size: 0.95rem;
-        padding: 0 1rem !important;
+        padding: 0 18px !important;
         cursor: not-allowed;
         opacity: 0.6;
 
         &:focus {
-            border-color: #374151 !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
             box-shadow: none !important;
         }
     }
@@ -198,31 +197,23 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
         >
             {({ isSubmitting }) => (
                 <LoginFormContainer subtitle="Buat password baru untuk akun Anda">
-                    <InputWrapper>
-                        <EmailLabel>Alamat Email</EmailLabel>
-                        <EmailInput value={email} isLight disabled />
-                    </InputWrapper>
-                    <InputWrapper>
-                        <IconWrapper><LockIcon /></IconWrapper>
-                        <StyledField
-                            light
-                            label="Password Baru"
-                            name="password"
-                            type="password"
-                            placeholder="Minimal 8 karakter"
-                            description="Password harus terdiri dari minimal 8 karakter."
-                        />
-                    </InputWrapper>
-                    <InputWrapper>
-                        <IconWrapper><KeyIcon /></IconWrapper>
-                        <StyledField
-                            light
-                            label="Konfirmasi Password Baru"
-                            name="passwordConfirmation"
-                            type="password"
-                            placeholder="Masukkan ulang password"
-                        />
-                    </InputWrapper>
+                    <EmailLabel>Alamat Email</EmailLabel>
+                    <EmailInput value={email} isLight disabled />
+                    <StyledField
+                        light
+                        label="Password Baru"
+                        name="password"
+                        type="password"
+                        placeholder="Minimal 8 karakter"
+                        description="Password harus terdiri dari minimal 8 karakter."
+                    />
+                    <StyledField
+                        light
+                        label="Konfirmasi Password Baru"
+                        name="passwordConfirmation"
+                        type="password"
+                        placeholder="Masukkan ulang password"
+                    />
                     <StyledButton type="submit" disabled={isSubmitting} isLoading={isSubmitting}>
                         Reset Password
                     </StyledButton>
