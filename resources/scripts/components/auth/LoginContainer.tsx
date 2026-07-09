@@ -18,79 +18,29 @@ interface Values {
     password: string;
 }
 
-// SVG Icons inline dengan ukuran yang tepat
-const UserIcon = () => (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        strokeWidth={2} 
-        stroke="currentColor"
-        width="20"
-        height="20"
-    >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-    </svg>
-);
-
-const LockIcon = () => (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        strokeWidth={2} 
-        stroke="currentColor"
-        width="20"
-        height="20"
-    >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-    </svg>
-);
-
-// Styled components untuk input dengan icon
-const InputWrapper = styled.div`
-    position: relative;
-    margin-bottom: 1.25rem;
-`;
-
-const IconWrapper = styled.div`
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    color: #9CA3AF;
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-
-    svg {
-        width: 20px;
-        height: 20px;
-    }
-`;
-
 const StyledField = styled(Field)`
     && {
-        margin-bottom: 0;
+        margin-bottom: 1.25rem;
 
         label {
-            display: none;
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #9CA3AF;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.02em;
         }
 
         input {
-            height: 54px;
+            height: 56px;
             width: 100%;
             border-radius: 14px;
             background: #111827 !important;
-            border: 1px solid #2A2F3A !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
             color: #FFFFFF !important;
             font-size: 0.95rem;
-            padding: 0 16px 0 52px !important;
-            transition: all 0.25s ease !important;
+            padding: 0 18px !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
             outline: none !important;
 
             &::placeholder {
@@ -98,9 +48,13 @@ const StyledField = styled(Field)`
             }
 
             &:focus {
-                border-color: #EF4444 !important;
-                box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+                border-color: #DC2626 !important;
+                box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
                 outline: none !important;
+            }
+
+            &:hover:not(:focus) {
+                border-color: rgba(255, 255, 255, 0.15) !important;
             }
 
             &:disabled {
@@ -112,7 +66,7 @@ const StyledField = styled(Field)`
         .error-message {
             font-size: 0.75rem;
             color: #EF4444;
-            margin-top: 4px;
+            margin-top: 0.3rem;
             padding-left: 4px;
         }
     }
@@ -121,25 +75,27 @@ const StyledField = styled(Field)`
 const StyledButton = styled(Button)`
     && {
         width: 100%;
-        height: 54px;
+        height: 56px;
         border-radius: 14px;
         background: #DC2626 !important;
         font-weight: 600;
         font-size: 1rem;
-        letter-spacing: 0.01em;
-        transition: all 0.25s ease !important;
+        letter-spacing: 0.3px;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
         border: none !important;
         color: #FFFFFF !important;
-        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+        box-shadow: 0 4px 16px rgba(220, 38, 38, 0.25);
 
         &:hover:not(:disabled) {
             background: #EF4444 !important;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.35);
         }
 
         &:active:not(:disabled) {
+            background: #B91C1C !important;
             transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
         }
 
         &:disabled {
@@ -157,7 +113,6 @@ const ForgotLink = styled(Link)`
     font-weight: 500;
     letter-spacing: 0.02em;
     transition: color 0.2s ease;
-    text-transform: uppercase;
 
     &:hover {
         color: #EF4444;
@@ -221,28 +176,22 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
                 <LoginFormContainer subtitle="Modern Server Management Platform">
-                    <InputWrapper>
-                        <IconWrapper><UserIcon /></IconWrapper>
-                        <StyledField
-                            light
-                            type="text"
-                            label="Username"
-                            name="username"
-                            placeholder="Masukkan username"
-                            disabled={isSubmitting}
-                        />
-                    </InputWrapper>
-                    <InputWrapper>
-                        <IconWrapper><LockIcon /></IconWrapper>
-                        <StyledField
-                            light
-                            type="password"
-                            label="Password"
-                            name="password"
-                            placeholder="Masukkan password"
-                            disabled={isSubmitting}
-                        />
-                    </InputWrapper>
+                    <StyledField
+                        light
+                        type="text"
+                        label="Username"
+                        name="username"
+                        placeholder="Masukkan username"
+                        disabled={isSubmitting}
+                    />
+                    <StyledField
+                        light
+                        type="password"
+                        label="Password"
+                        name="password"
+                        placeholder="Masukkan password"
+                        disabled={isSubmitting}
+                    />
                     <StyledButton
                         type="submit"
                         isLoading={isSubmitting}
