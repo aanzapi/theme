@@ -13,11 +13,11 @@ interface Props extends React.FormHTMLAttributes<HTMLFormElement> {
 const fadeSlideUp = keyframes`
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(24px) scale(0.98);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 `;
 
@@ -25,32 +25,32 @@ const Container = styled.div`
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    padding: 1.5rem;
-    animation: ${fadeSlideUp} 0.5s ease-out;
+    animation: ${fadeSlideUp} 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 `;
 
 const Card = styled.div`
-    background: #18181B;
-    border-radius: 22px;
-    padding: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.8),
-        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+    background: rgba(24, 24, 27, 0.82);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    transition: box-shadow 0.3s ease;
+    border-radius: 24px;
+    padding: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 
+        0 20px 80px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
     &:hover {
+        transform: translateY(-2px);
         box-shadow: 
-            0 30px 60px -12px rgba(0, 0, 0, 0.9),
+            0 24px 100px rgba(0, 0, 0, 0.5),
             0 0 0 1px rgba(255, 255, 255, 0.03) inset;
     }
 `;
 
 const Header = styled.div`
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.25rem;
 `;
 
 const Logo = styled.img`
@@ -62,18 +62,18 @@ const Logo = styled.img`
 `;
 
 const Title = styled.h1`
-    font-size: 1.75rem;
-    font-weight: 600;
+    font-size: 30px;
+    font-weight: 700;
     color: #FFFFFF;
     letter-spacing: -0.02em;
     margin: 0;
-    line-height: 1.2;
+    line-height: 1.1;
 `;
 
 const Subtitle = styled.p`
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     color: #9CA3AF;
-    margin: 0.35rem 0 0;
+    margin: 0.5rem 0 0;
     font-weight: 400;
     letter-spacing: 0.01em;
 `;
