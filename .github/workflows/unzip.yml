@@ -1,0 +1,38 @@
+name: Auto Unzip Resources
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Unzip resources.zip
+        run: |
+          if [ -f resources.zip ]; then
+            echo "resources.zip ditemukan"
+
+            rm -rf resources
+            unzip -o resources.zip -d .
+
+            rm resources.zip
+
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            git add .
+            git commit -m "Auto extract resources.zip" || echo "Tidak ada perubahan"
+
+            git push
+          else
+            echo "resources.zip tidak ditemukan"
+          fi
