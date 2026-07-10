@@ -1,5 +1,5 @@
 // resources/scripts/components/elements/SubNavigation.tsx
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,7 +18,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/fontawesome-common-types';
 
-// Container utama dengan padding responsif
+// ============================================
+// STYLED COMPONENTS
+// ============================================
+
 const Container = styled.div`
     max-width: 1600px;
     margin: 0 auto;
@@ -37,9 +40,8 @@ const Container = styled.div`
     }
 `;
 
-// Wrapper navigasi dengan glassmorphism
 const NavWrapper = styled.nav`
-    background: rgba(24, 24, 27, 0.82);
+    background: rgba(24, 24, 27, 0.72);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -48,12 +50,64 @@ const NavWrapper = styled.nav`
     padding: 8px;
     margin-top: 20px;
     margin-bottom: 28px;
+    position: relative;
+    overflow: visible;
+`;
+
+// Fade gradient indicator for scrollable content
+const FadeLeft = styled.div`
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, rgba(24, 24, 27, 0.8), transparent);
+    pointer-events: none;
+    z-index: 2;
+    border-radius: 20px 0 0 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &.visible {
+        opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+        width: 30px;
+    }
+`;
+
+const FadeRight = styled.div`
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to left, rgba(24, 24, 27, 0.8), transparent);
+    pointer-events: none;
+    z-index: 2;
+    border-radius: 0 20px 20px 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &.visible {
+        opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+        width: 30px;
+    }
+`;
+
+const NavScroller = styled.div`
     overflow-x: auto;
     overflow-y: hidden;
-    position: relative;
     -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    position: relative;
 
-    /* Hide scrollbar but keep functionality */
+    /* Hide scrollbar completely */
     &::-webkit-scrollbar {
         height: 0;
         width: 0;
@@ -67,24 +121,19 @@ const NavWrapper = styled.nav`
     -ms-overflow-style: none;
 `;
 
-// List navigasi - horizontal flex dengan no wrap
 const NavList = styled.div`
     display: flex;
     align-items: center;
-    gap: 4px;
-    min-width: max-content;
+    gap: 6px;
     padding: 0 4px;
-
-    @media (max-width: 768px) {
-        gap: 3px;
-    }
+    min-width: max-content;
 
     @media (max-width: 480px) {
-        gap: 2px;
+        gap: 4px;
+        padding: 0 2px;
     }
 `;
 
-// Styled NavLink dengan semua styling modern
 const NavItem = styled(NavLink)`
     display: inline-flex;
     align-items: center;
@@ -103,6 +152,8 @@ const NavItem = styled(NavLink)`
     background: transparent;
     border: 1px solid transparent;
     flex-shrink: 0;
+    width: fit-content;
+    scroll-snap-align: start;
 
     svg {
         width: 16px;
@@ -114,7 +165,7 @@ const NavItem = styled(NavLink)`
     &:hover {
         background: rgba(255, 255, 255, 0.05);
         color: #FFFFFF;
-        transform: translateY(-2px);
+        transform: translateY(-1px);
     }
 
     &:active {
@@ -126,7 +177,6 @@ const NavItem = styled(NavLink)`
         color: #FFFFFF;
         box-shadow: 0 10px 30px rgba(220, 38, 38, 0.25);
         border-color: rgba(255, 255, 255, 0.08);
-        transform: scale(1.02);
 
         svg {
             color: #FFFFFF;
@@ -135,11 +185,11 @@ const NavItem = styled(NavLink)`
         &:hover {
             background: #EF4444;
             box-shadow: 0 14px 40px rgba(220, 38, 38, 0.35);
-            transform: scale(1.02) translateY(-2px);
+            transform: translateY(-1px);
         }
 
         &:active {
-            transform: scale(1.02);
+            transform: translateY(0);
         }
     }
 
@@ -164,13 +214,12 @@ const NavItem = styled(NavLink)`
         gap: 5px;
 
         svg {
-            width: 13px;
-            height: 13px;
+            width: 14px;
+            height: 14px;
         }
     }
 `;
 
-// Admin link khusus untuk root admin
 const AdminLink = styled.a`
     display: inline-flex;
     align-items: center;
@@ -184,6 +233,7 @@ const AdminLink = styled.a`
     background: transparent;
     border: 1px solid transparent;
     flex-shrink: 0;
+    scroll-snap-align: start;
 
     svg {
         width: 16px;
@@ -194,7 +244,7 @@ const AdminLink = styled.a`
     &:hover {
         background: rgba(255, 255, 255, 0.05);
         color: #FFFFFF;
-        transform: translateY(-2px);
+        transform: translateY(-1px);
     }
 
     @media (max-width: 768px) {
@@ -212,13 +262,16 @@ const AdminLink = styled.a`
         width: 38px;
 
         svg {
-            width: 13px;
-            height: 13px;
+            width: 14px;
+            height: 14px;
         }
     }
 `;
 
-// Mapping path ke icon
+// ============================================
+// HELPERS
+// ============================================
+
 const getIconForPath = (path: string): IconDefinition => {
     if (path.includes('console') || path === '/' || path === '') return faTerminal;
     if (path.includes('files')) return faFolder;
@@ -233,14 +286,88 @@ const getIconForPath = (path: string): IconDefinition => {
     return faTerminal;
 };
 
-// Props untuk SubNavigation
+// ============================================
+// MAIN COMPONENT
+// ============================================
+
 interface SubNavigationProps {
     children: React.ReactNode;
 }
 
-// Komponen utama
 const SubNavigation: React.FC<SubNavigationProps> = ({ children }) => {
-    // Ekstrak children dari div wrapper
+    const scrollerRef = useRef<HTMLDivElement>(null);
+    const [showLeftFade, setShowLeftFade] = useState(false);
+    const [showRightFade, setShowRightFade] = useState(false);
+    const [activeItemId, setActiveItemId] = useState<string | null>(null);
+
+    // Check scroll position to show/hide fade indicators
+    const checkScroll = () => {
+        if (!scrollerRef.current) return;
+
+        const { scrollLeft, scrollWidth, clientWidth } = scrollerRef.current;
+        setShowLeftFade(scrollLeft > 10);
+        setShowRightFade(scrollLeft < scrollWidth - clientWidth - 10);
+    };
+
+    // Scroll to active item on mount and when active changes
+    useEffect(() => {
+        if (!scrollerRef.current || !activeItemId) return;
+
+        const activeElement = scrollerRef.current.querySelector(`.active`);
+        if (activeElement) {
+            const scroller = scrollerRef.current;
+            const elementRect = activeElement.getBoundingClientRect();
+            const scrollerRect = scroller.getBoundingClientRect();
+
+            // Calculate scroll position to center the active item
+            const scrollOffset = 
+                activeElement.scrollLeft ||
+                (activeElement as any).offsetLeft ||
+                0;
+            
+            const targetScroll = 
+                scrollOffset - (scrollerRect.width / 2) + (elementRect.width / 2);
+
+            scroller.scrollTo({
+                left: Math.max(0, targetScroll),
+                behavior: 'smooth',
+            });
+        }
+    }, [activeItemId]);
+
+    // Debounced scroll check
+    useEffect(() => {
+        const handleScroll = () => {
+            requestAnimationFrame(checkScroll);
+        };
+
+        const scroller = scrollerRef.current;
+        if (scroller) {
+            scroller.addEventListener('scroll', handleScroll);
+            // Initial check
+            setTimeout(checkScroll, 100);
+        }
+
+        return () => {
+            if (scroller) {
+                scroller.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
+    // Handle resize
+    useEffect(() => {
+        const handleResize = () => {
+            checkScroll();
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    // Extract children from the wrapper div
     const childrenArray = React.Children.toArray(children);
     const navChildren = childrenArray.flatMap((child) => {
         if (React.isValidElement(child) && child.type === 'div') {
@@ -249,15 +376,39 @@ const SubNavigation: React.FC<SubNavigationProps> = ({ children }) => {
         return child;
     });
 
-    // Render ulang dengan styling yang benar
+    // Render items with proper styling
     const renderedItems = navChildren.map((child, index) => {
         if (React.isValidElement(child) && child.type === NavLink) {
             const childProps = child.props as any;
             const to = childProps.to || '';
             const icon = getIconForPath(typeof to === 'string' ? to : '');
-            const isAdminLink = childProps.href?.includes('/admin');
+            const isActive = childProps.isActive || false;
 
-            if (isAdminLink) {
+            // Track active item for scrolling
+            const itemId = `nav-item-${index}`;
+            const isActiveItem = childProps.className?.includes('active') || false;
+            if (isActiveItem && activeItemId !== itemId) {
+                setActiveItemId(itemId);
+            }
+
+            return (
+                <NavItem
+                    key={index}
+                    to={to}
+                    exact={childProps.exact}
+                    activeClassName="active"
+                    id={itemId}
+                >
+                    <FontAwesomeIcon icon={icon} />
+                    {childProps.children}
+                </NavItem>
+            );
+        }
+
+        // Handle admin link
+        if (React.isValidElement(child)) {
+            const childProps = child.props as any;
+            if (childProps.href?.includes('/admin')) {
                 return (
                     <AdminLink
                         key={index}
@@ -269,28 +420,21 @@ const SubNavigation: React.FC<SubNavigationProps> = ({ children }) => {
                     </AdminLink>
                 );
             }
-
-            return (
-                <NavItem
-                    key={index}
-                    to={to}
-                    exact={childProps.exact}
-                    activeClassName="active"
-                >
-                    <FontAwesomeIcon icon={icon} />
-                    {childProps.children}
-                </NavItem>
-            );
         }
+
         return child;
     });
 
     return (
         <Container>
             <NavWrapper>
-                <NavList>
-                    {renderedItems}
-                </NavList>
+                <FadeLeft className={showLeftFade ? 'visible' : ''} />
+                <FadeRight className={showRightFade ? 'visible' : ''} />
+                <NavScroller ref={scrollerRef}>
+                    <NavList>
+                        {renderedItems}
+                    </NavList>
+                </NavScroller>
             </NavWrapper>
         </Container>
     );
