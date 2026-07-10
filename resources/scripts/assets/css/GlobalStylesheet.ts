@@ -13,37 +13,51 @@ export default createGlobalStyle`
         unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
     }
 
-    * {
+    *,
+    *::before,
+    *::after {
         box-sizing: border-box;
     }
 
-    html,
-    body {
-        margin: 0;
-        padding: 0;
+    html {
+        height: 100%;
         scroll-behavior: smooth;
     }
 
     body {
         ${tw`font-sans text-white`};
 
-        background-color: #09090B;
+        margin: 0;
+        min-height: 100vh;
+        color: #FFFFFF;
+        letter-spacing: .015em;
+
+        background: #09090B;
 
         background-image:
-            radial-gradient(circle at top, rgba(220,38,38,.12), transparent 45%),
+            radial-gradient(
+                ellipse at 50% 40%,
+                rgba(220,38,38,.12) 0%,
+                transparent 70%
+            ),
             linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
 
         background-size:
             auto,
-            40px 40px,
-            40px 40px;
+            48px 48px,
+            48px 48px;
 
         background-attachment: fixed;
 
-        color: #FFFFFF;
-        letter-spacing: .015em;
-        transition: background .25s ease;
+        transition:
+            background .25s ease,
+            color .25s ease;
+    }
+
+    #app,
+    #root {
+        min-height: 100vh;
     }
 
     ::selection {
@@ -59,21 +73,22 @@ export default createGlobalStyle`
     h6 {
         ${tw`font-medium tracking-normal font-header`};
         color: #FFFFFF;
+        margin: 0;
     }
 
     p {
-        line-height: 1.7;
         color: #A1A1AA;
+        line-height: 1.7;
     }
 
     a {
         color: inherit;
         text-decoration: none;
-        transition: .25s;
+        transition: .25s ease;
     }
 
     form {
-        ${tw`m-0`};
+        margin: 0;
     }
 
     textarea,
@@ -82,7 +97,8 @@ export default createGlobalStyle`
     button,
     button:focus,
     button:focus-visible {
-        ${tw`outline-none`};
+        outline: none;
+        font-family: inherit;
     }
 
     input,
@@ -99,12 +115,12 @@ export default createGlobalStyle`
 
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none !important;
+        -webkit-appearance: none;
         margin: 0;
     }
 
     input[type=number] {
-        -moz-appearance: textfield !important;
+        -moz-appearance: textfield;
     }
 
     /* Scrollbar */
@@ -112,7 +128,6 @@ export default createGlobalStyle`
     ::-webkit-scrollbar {
         width: 12px;
         height: 12px;
-        background: transparent;
     }
 
     ::-webkit-scrollbar-track {
@@ -120,11 +135,11 @@ export default createGlobalStyle`
     }
 
     ::-webkit-scrollbar-thumb {
-        background: rgba(220,38,38,.35);
+        background: rgba(220,38,38,.30);
         border-radius: 999px;
         border: 3px solid transparent;
         background-clip: padding-box;
-        transition: .25s;
+        transition: background .25s ease;
     }
 
     ::-webkit-scrollbar-thumb:hover {
@@ -134,5 +149,10 @@ export default createGlobalStyle`
 
     ::-webkit-scrollbar-corner {
         background: transparent;
+    }
+
+    code,
+    pre {
+        font-family: "JetBrains Mono", "Fira Code", monospace;
     }
 `;
