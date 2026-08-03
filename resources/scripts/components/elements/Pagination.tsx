@@ -1,10 +1,7 @@
+// Pagination.tsx
 import React from 'react';
 import { PaginatedResult } from '@/api/http';
-import tw from 'twin.macro';
-import styled from 'styled-components/macro';
-import Button from '@/components/elements/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDoubleLeft, faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface RenderFuncProps<T> {
     items: T[];
@@ -20,22 +17,11 @@ interface Props<T> {
     children: (props: RenderFuncProps<T>) => React.ReactNode;
 }
 
-const Block = styled(Button)`
-    ${tw`p-0 w-10 h-10`}
-
-    &:not(:last-of-type) {
-        ${tw`mr-2`};
-    }
-`;
-
 function Pagination<T>({ data: { items, pagination }, onPageSelect, children }: Props<T>) {
     const isFirstPage = pagination.currentPage === 1;
     const isLastPage = pagination.currentPage >= pagination.totalPages;
 
     const pages = [];
-
-    // Start two spaces before the current page. If that puts us before the starting page default
-    // to the first page as the starting point.
     const start = Math.max(pagination.currentPage - 2, 1);
     const end = Math.min(pagination.totalPages, pagination.currentPage + 5);
 
@@ -47,26 +33,39 @@ function Pagination<T>({ data: { items, pagination }, onPageSelect, children }: 
         <>
             {children({ items, isFirstPage, isLastPage })}
             {pages.length > 1 && (
-                <div css={tw`mt-4 flex justify-center`}>
+                <div className="mt-6 flex items-center justify-center gap-1">
                     {pages[0] > 1 && !isFirstPage && (
-                        <Block isSecondary color={'primary'} onClick={() => onPageSelect(1)}>
-                            <FontAwesomeIcon icon={faAngleDoubleLeft} />
-                        </Block>
+                        <button
+                            onClick={() => onPageSelect(1)}
+                            className="p-2 rounded-xl bg-white/5 border border-white/10 text-blue-200/40 hover:bg-white/10 hover:text-white transition-all duration-200"
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                            <ChevronLeft className="w-4 h-4 -ml-2" />
+                        </button>
                     )}
+                    
                     {pages.map((i) => (
-                        <Block
-                            isSecondary={pagination.currentPage !== i}
-                            color={'primary'}
+                        <button
                             key={`block_page_${i}`}
                             onClick={() => onPageSelect(i)}
+                            className={`px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                pagination.currentPage === i
+                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30'
+                                    : 'text-blue-200/60 hover:bg-white/10 hover:text-white'
+                            }`}
                         >
                             {i}
-                        </Block>
+                        </button>
                     ))}
-                    {pages[4] < pagination.totalPages && !isLastPage && (
-                        <Block isSecondary color={'primary'} onClick={() => onPageSelect(pagination.totalPages)}>
-                            <FontAwesomeIcon icon={faAngleDoubleRight} />
-                        </Block>
+                    
+                    {pages[pages.length - 1] < pagination.totalPages && !isLastPage && (
+                        <button
+                            onClick={() => onPageSelect(pagination.totalPages)}
+                            className="p-2 rounded-xl bg-white/5 border border-white/10 text-blue-200/40 hover:bg-white/10 hover:text-white transition-all duration-200"
+                        >
+                            <ChevronRight className="w-4 h-4" />
+                            <ChevronRight className="w-4 h-4 -ml-2" />
+                        </button>
                     )}
                 </div>
             )}

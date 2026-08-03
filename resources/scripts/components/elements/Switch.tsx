@@ -1,3 +1,4 @@
+// Switch.tsx
 import React, { useMemo } from 'react';
 import styled from 'styled-components/macro';
 import { v4 } from 'uuid';
@@ -12,26 +13,28 @@ const ToggleContainer = styled.div`
         ${tw`hidden`};
 
         &:checked + label {
-            ${tw`bg-primary-500 border-primary-700 shadow-none`};
+            background: linear-gradient(135deg, #2563EB, #3B82F6);
+            border-color: #2563EB;
+            box-shadow: 0 0 20px rgba(37,99,235,0.3);
         }
 
         &:checked + label:before {
             right: 0.125rem;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.4);
         }
     }
 
     & > label {
-        ${tw`mb-0 block overflow-hidden cursor-pointer bg-neutral-400 border border-neutral-700 rounded-full h-6 shadow-inner`};
-        transition: all 75ms linear;
+        ${tw`mb-0 block overflow-hidden cursor-pointer border rounded-full h-6 shadow-inner transition-all duration-300`};
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.1);
 
         &::before {
-            ${tw`absolute block bg-white border h-5 w-5 rounded-full`};
+            ${tw`absolute block bg-white border h-5 w-5 rounded-full transition-all duration-300`};
             top: 0.125rem;
             right: calc(50% + 0.125rem);
-            //width: 1.25rem;
-            //height: 1.25rem;
             content: '';
-            transition: all 75ms ease-in;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
     }
 `;
@@ -50,8 +53,8 @@ const Switch = ({ name, label, description, defaultChecked, readOnly, onChange, 
     const uuid = useMemo(() => v4(), []);
 
     return (
-        <div css={tw`flex items-center`}>
-            <ToggleContainer css={tw`flex-none`}>
+        <div className="flex items-center">
+            <ToggleContainer className="flex-none">
                 {children || (
                     <Input
                         id={uuid}
@@ -65,13 +68,13 @@ const Switch = ({ name, label, description, defaultChecked, readOnly, onChange, 
                 <Label htmlFor={uuid} />
             </ToggleContainer>
             {(label || description) && (
-                <div css={tw`ml-4 w-full`}>
+                <div className="ml-4 w-full">
                     {label && (
-                        <Label css={[tw`cursor-pointer`, !!description && tw`mb-0`]} htmlFor={uuid}>
+                        <Label className={`cursor-pointer ${!!description && 'mb-0'}`} htmlFor={uuid}>
                             {label}
                         </Label>
                     )}
-                    {description && <p css={tw`text-neutral-400 text-sm mt-2`}>{description}</p>}
+                    {description && <p className="text-blue-200/60 text-sm mt-2">{description}</p>}
                 </div>
             )}
         </div>

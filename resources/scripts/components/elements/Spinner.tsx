@@ -1,5 +1,6 @@
+// Spinner.tsx
 import React, { Suspense } from 'react';
-import styled, { css, keyframes } from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import tw from 'twin.macro';
 import ErrorBoundary from '@/components/elements/ErrorBoundary';
 
@@ -20,30 +21,44 @@ const spin = keyframes`
     to { transform: rotate(360deg); }
 `;
 
-// noinspection CssOverwrittenProperties
 const SpinnerComponent = styled.div<Props>`
-    ${tw`w-8 h-8`};
-    border-width: 3px;
-    border-radius: 50%;
-    animation: ${spin} 1s cubic-bezier(0.55, 0.25, 0.25, 0.7) infinite;
-
-    ${(props) =>
-        props.size === 'small'
-            ? tw`w-4 h-4 border-2`
-            : props.size === 'large'
-            ? css`
-                  ${tw`w-16 h-16`};
-                  border-width: 6px;
-              `
-            : null};
-
-    border-color: ${(props) => (!props.isBlue ? 'rgba(255, 255, 255, 0.2)' : 'hsla(212, 92%, 43%, 0.2)')};
-    border-top-color: ${(props) => (!props.isBlue ? 'rgb(255, 255, 255)' : 'hsl(212, 92%, 43%)')};
+    ${tw`relative`};
+    
+    &::before {
+        content: '';
+        ${tw`absolute inset-0 rounded-full blur-xl`};
+        background: rgba(37, 99, 235, 0.2);
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    &::after {
+        content: '';
+        ${tw`relative block rounded-full`};
+        border-width: 3px;
+        border-radius: 50%;
+        animation: ${spin} 1s cubic-bezier(0.55, 0.25, 0.25, 0.7) infinite;
+        
+        ${(props) =>
+            props.size === 'small'
+                ? tw`w-4 h-4 border-2`
+                : props.size === 'large'
+                ? tw`w-16 h-16 border-[6px]`
+                : tw`w-8 h-8 border-[3px]`};
+        
+        border-color: ${(props) => (!props.isBlue ? 'rgba(255, 255, 255, 0.1)' : 'hsla(212, 92%, 43%, 0.2)')};
+        border-top-color: ${(props) => (!props.isBlue ? 'rgb(37, 99, 235)' : 'hsl(212, 92%, 43%)')};
+        box-shadow: 0 0 30px rgba(37, 99, 235, 0.1);
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.1); }
+    }
 `;
 
 const Spinner: Spinner = ({ centered, ...props }) =>
     centered ? (
-        <div css={[tw`flex justify-center items-center`, props.size === 'large' ? tw`m-20` : tw`m-6`]}>
+        <div className={`flex items-center justify-center ${props.size === 'large' ? 'my-20' : 'my-6'}`}>
             <SpinnerComponent {...props} />
         </div>
     ) : (

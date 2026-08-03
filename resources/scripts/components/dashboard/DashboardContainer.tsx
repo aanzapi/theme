@@ -1,3 +1,4 @@
+// DashboardContainer.tsx (Premium Version)
 import React, { useEffect, useState } from 'react';
 import { Server } from '@/api/server/getServer';
 import getServers from '@/api/getServers';
@@ -8,11 +9,21 @@ import useFlash from '@/plugins/useFlash';
 import { useStoreState } from 'easy-peasy';
 import { usePersistedState } from '@/plugins/usePersistedState';
 import Switch from '@/components/elements/Switch';
-import tw from 'twin.macro';
 import useSWR from 'swr';
 import { PaginatedResult } from '@/api/http';
 import Pagination from '@/components/elements/Pagination';
 import { useLocation } from 'react-router-dom';
+import { 
+  Server as ServerIcon, 
+  Cpu, 
+  HardDrive, 
+  MemoryStick,
+  Zap,
+  Activity,
+  Clock,
+  Sparkles,
+  ChevronRight
+} from 'lucide-react';
 
 export default () => {
     const { search } = useLocation();
@@ -41,9 +52,6 @@ export default () => {
     }, [servers?.pagination.currentPage]);
 
     useEffect(() => {
-        // Don't use react-router to handle changing this part of the URL, otherwise it
-        // triggers a needless re-render. We just want to track this in the URL incase the
-        // user refreshes the page.
         window.history.replaceState(null, document.title, `/${page <= 1 ? '' : `?page=${page}`}`);
     }, [page]);
 
@@ -52,39 +60,121 @@ export default () => {
         if (!error) clearFlashes('dashboard');
     }, [error]);
 
+    // Stats untuk dashboard
+    const stats = [
+        { icon: ServerIcon, label: 'Total Servers', value: servers?.items.length || 0, color: 'blue' },
+        { icon: Cpu, label: 'CPU Usage', value: '23.5%', color: 'green' },
+        { icon: MemoryStick, label: 'RAM Usage', value: '1.2 GB', color: 'purple' },
+        { icon: HardDrive, label: 'Storage', value: '45.6 GB', color: 'orange' },
+    ];
+
     return (
         <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'}>
-            {rootAdmin && (
-                <div css={tw`mb-2 flex justify-end items-center`}>
-                    <p css={tw`uppercase text-xs text-neutral-400 mr-2`}>
-                        {showOnlyAdmin ? "Showing others' servers" : 'Showing your servers'}
-                    </p>
-                    <Switch
-                        name={'show_all_servers'}
-                        defaultChecked={showOnlyAdmin}
-                        onChange={() => setShowOnlyAdmin((s) => !s)}
-                    />
+            {/* Welcome Hero */}
+            <div className="mb-8">
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600/20 via-blue-500/10 to-transparent p-6 sm:p-8 border border-blue-500/20">
+                    <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+                    <div className="absolute top-[-50%] right-[-10%] w-[300px] h-[300px] bg-blue-500 rounded-full filter blur-3xl opacity-10"></div>
+                    <div className="absolute bottom-[-50%] left-[-10%] w-[200px] h-[200px] bg-indigo-500 rounded-full filter blur-3xl opacity-5"></div>
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="w-5 h-5 text-blue-400" />
+                            <span className="text-xs font-medium text-blue-400 uppercase tracking-wider">Dashboard</span>
+                        </div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Welcome Back</h1>
+                        <p className="text-blue-200/60 text-sm sm:text-base">Manage your infrastructure efficiently and securely.</p>
+                    </div>
                 </div>
-            )}
-            {!servers ? (
-                <Spinner centered size={'large'} />
-            ) : (
-                <Pagination data={servers} onPageSelect={setPage}>
-                    {({ items }) =>
-                        items.length > 0 ? (
-                            items.map((server, index) => (
-                                <ServerRow key={server.uuid} server={server} css={index > 0 ? tw`mt-2` : undefined} />
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                {stats.map((stat, index) => {
+                    const colorClasses = {
+                        blue: 'bg-blue-500/20 text-blue-400',
+                        green: 'bg-green-500/20 text-green-400',
+                        purple: 'bg-purple-500/20 text-purple-400',
+                        orange: 'bg-orange-500/20 text-orange-400',
+                    };
+                    return (
+                        <div key={index} className="group relative overflow-hidden rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/10 p-4 sm:p-6 hover:border-blue-500/40 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/10">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-blue-600/10 transition-all duration-500"></div>
+                            <div className="relative flex items-center justify-between">
+                                <div>
+                                    <p className="text-xs sm:text-sm text-blue-200/60 mb-1">{stat.label}</p>
+                                    <p className="text-xl sm:text-2xl font-bold text-white">{stat.value}</p>
+                                </div>
+                                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${colorClasses[stat.color as keyof typeof colorClasses]} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                                    <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Server List Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div>
+                    <h2 className="text-lg sm:text-xl font-semibold text-white">Your Servers</h2>
+                    <p className="text-xs sm:text-sm text-blue-200/60">Manage and monitor your game servers</p>
+                </div>
+                {rootAdmin && (
+                    <div className="flex items-center gap-3 bg-white/[0.04] backdrop-blur-sm rounded-xl px-3 sm:px-4 py-2 border border-white/10">
+                        <span className="text-xs text-blue-200/60 whitespace-nowrap">
+                            {showOnlyAdmin ? "Showing others' servers" : 'Showing your servers'}
+                        </span>
+                        <Switch
+                            name={'show_all_servers'}
+                            defaultChecked={showOnlyAdmin}
+                            onChange={() => setShowOnlyAdmin((s) => !s)}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Server List */}
+            <div className="space-y-3">
+                {!servers ? (
+                    <div className="flex justify-center py-12">
+                        <Spinner centered size={'large'} />
+                    </div>
+                ) : (
+                    <>
+                        {servers.items.length > 0 ? (
+                            servers.items.map((server) => (
+                                <ServerRow key={server.uuid} server={server} />
                             ))
                         ) : (
-                            <p css={tw`text-center text-sm text-neutral-400`}>
-                                {showOnlyAdmin
-                                    ? 'There are no other servers to display.'
-                                    : 'There are no servers associated with your account.'}
-                            </p>
-                        )
-                    }
-                </Pagination>
-            )}
+                            <div className="text-center py-12 sm:py-16 bg-white/[0.02] rounded-2xl border border-white/5">
+                                <ServerIcon className="w-12 h-12 sm:w-16 sm:h-16 text-blue-400/30 mx-auto mb-3 sm:mb-4" />
+                                <p className="text-blue-200/60 text-sm sm:text-base">
+                                    {showOnlyAdmin
+                                        ? 'There are no other servers to display.'
+                                        : 'There are no servers associated with your account.'}
+                                </p>
+                            </div>
+                        )}
+                        
+                        {servers.items.length > 0 && (
+                            <div className="mt-4 sm:mt-6">
+                                <Pagination data={servers} onPageSelect={setPage}>
+                                    {({ items }) => null}
+                                </Pagination>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+
+            <style>{`
+                .bg-grid-pattern {
+                    background-image: 
+                        linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
+                    background-size: 40px 40px;
+                }
+            `}</style>
         </PageContentBlock>
     );
 };
